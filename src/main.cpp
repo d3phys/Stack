@@ -4,16 +4,23 @@
 #include <stdint.h>
 #include "include/stack.h"
 #include "include/log.h"
+#include "include/hash.h"
 
 
 int main() 
 {
         stack_t stk = {};
-        create_log();
 //j        int i = 'u'<< sizeof(4);
 //        log("I:   %c", i);
 //        log("I:   %d", i);
       
+        size_t key = 0x32321323ffaafda;
+        size_t key2= 0x33321323ffaafda;
+$       (log("Hash: %x\n", murmur_hash(&key, sizeof(key), 123));)
+$       (log("Hash: %x\n", murmur_hash(&key, sizeof(key), 12));)
+$       (log("Hash: %x\n", murmur_hash(&key2, sizeof(key2), 123));)
+
+
 $       (construct_stack(&stk, 10);)
 $       (log_dump(&stk);)
 

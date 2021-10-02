@@ -23,8 +23,8 @@ static const char HEADER[] = "<!DOCTYPE html>                      \n"
                                                     "┈┈╰━┳┓┏┳┓┏╯┈┈┈\n"
                                                     "┈┈┈┈┗┻┛┗┻┛┈┈┈┈\n"
                                                     "       </font>\n";  
-
-static FILE *LOG = nullptr;
+static inline FILE* create_log();
+static FILE *LOG = create_log();
 
 inline FILE *const get_log()
 {
@@ -36,11 +36,12 @@ inline void log_flush()
         fflush(LOG);
 }
 
-static inline void create_log()
+static inline FILE* create_log()
 {
         LOG = fopen(LOG_NAME, "w");
         fprintf(LOG, HEADER);
         fflush(LOG);
+        return LOG;
 }
 
 #define $(code) log("%s\n", #code); code

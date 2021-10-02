@@ -5,7 +5,8 @@
 #include <stdlib.h>
 
 #define CANARY_PROTECT
-//#define HASH_PROTECT
+#define HASH_PROTECT
+
 //#define UNPROTECT
 
 typedef char item_t; 
@@ -15,16 +16,26 @@ typedef uint64_t canary_t;
 #endif /* CANARY_PROTECT */
 
 #ifdef HASH_PROTECT
-typedef uint64_t hash_t;
+typedef uint32_t hash_t;
 #endif /* HASH_PROTECT */
 
 
 struct stack_t {
-        uint64_t canary_begin = 0;
+#ifdef CANARY_PROTECT
+        canary_t canary_begin = 0;
+#endif /* CANARY_PROTECT */
+
         item_t *items         = nullptr;
         size_t capacity       = 0;
         size_t size           = 0;
-        uint64_t canary_end   = 0;
+
+#ifdef HASH_PROTECT
+        hash_t hash           = 0;
+#endif /* HASH_PROTECT */
+
+#ifdef CANARY_PROTECT
+        canary_t canary_end   = 0;
+#endif /* CANARY_PROTECT */
 };
 
 
