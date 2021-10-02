@@ -2,7 +2,10 @@
 *.o
 
 # Executables
-onegin
+stack
+
+# Logs
+stack_log.html
 
 # Input / output
 input.txt

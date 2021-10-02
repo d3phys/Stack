@@ -13,24 +13,105 @@ int main()
 //j        int i = 'u'<< sizeof(4);
 //        log("I:   %c", i);
 //        log("I:   %d", i);
-
+      
 $       (construct_stack(&stk, 10);)
+$       (log_dump(&stk);)
 
 $       (push_stack(&stk, 'f');) 
-        log_dump(&stk);
-        stk.capacity = 4;
-        log_dump(&stk);
+$       (log_dump(&stk);)
         
-        pop_stack(&stk);
-        pop_stack(&stk);
-        pop_stack(&stk);
-        pop_stack(&stk);
-        pop_stack(&stk);
-        pop_stack(&stk);
-        pop_stack(&stk);
-        pop_stack(&stk);
-        pop_stack(&stk);
+$       (pop_stack(&stk);) 
+$       (push_stack(&stk, 'f');) 
+$       (log_dump(&stk);)
+$       (push_stack(&stk, 'f');) 
+$       (log_dump(&stk);)
+$       (push_stack(&stk, 'f');) 
+$       (*((char *)stk.items - 2) = 32;);
+$       (log_dump(&stk);)
+$       (push_stack(&stk, 'f');) 
+$       (log_dump(&stk);)
+$       (push_stack(&stk, 'f');) 
+$       (log_dump(&stk);)
+$       (push_stack(&stk, 'f');) 
+$       (log_dump(&stk);)
+$       (push_stack(&stk, 'f');) 
+$       (log_dump(&stk);)
+$       (push_stack(&stk, 'f');) 
+$       (*((char *)stk.items - sizeof(canary_t) + 2) = 32;);
+$       (log_dump(&stk);)
+$       (push_stack(&stk, 'f');) 
+$       (log_dump(&stk);)
+$       (push_stack(&stk, 'f');) 
+$       (log_dump(&stk);)
+$       (push_stack(&stk, 'f');) 
+$       (log_dump(&stk);)
+$       (push_stack(&stk, 'f');) 
+$       (log_dump(&stk);)
+$       (push_stack(&stk, 'f');) 
+$       (log_dump(&stk);)
+$       (push_stack(&stk, 'f');) 
+$       (log_dump(&stk);)
+$       (push_stack(&stk, 'f');) 
+$       (log_dump(&stk);)
+$       (push_stack(&stk, 'f');) 
+$       (log_dump(&stk);)
+$       (push_stack(&stk, 'f');) 
+$       (log_dump(&stk);)
+$       (push_stack(&stk, 'f');) 
+$       (log_dump(&stk);)
+$       (push_stack(&stk, 'f');) 
+$       (log_dump(&stk);)
+$       (push_stack(&stk, 'f');) 
+$       (log_dump(&stk);)
+$       (push_stack(&stk, 'f');) 
+$       (log_dump(&stk);)
+$       (push_stack(&stk, 'f');) 
+$       (log_dump(&stk);)
+$       (push_stack(&stk, 'f');) 
+$       (log_dump(&stk);)
+$       (push_stack(&stk, 'f');) 
+$       (log_dump(&stk);)
+$       (pop_stack(&stk);) 
+$       (log_dump(&stk);)
+$       (pop_stack(&stk);) 
+$       (log_dump(&stk);)
+$       (pop_stack(&stk);) 
+$       (log_dump(&stk);)
+$       (pop_stack(&stk);) 
+$       (log_dump(&stk);)
+$       (pop_stack(&stk);) 
+$       (log_dump(&stk);)
+$       (pop_stack(&stk);) 
+$       (log_dump(&stk);)
+$       (pop_stack(&stk);) 
+$       (log_dump(&stk);)
+$       (pop_stack(&stk);) 
+$       (log_dump(&stk);)
+$       (pop_stack(&stk);) 
+$       (log_dump(&stk);)
+$       (pop_stack(&stk);) 
+$       (log_dump(&stk);)
+$       (pop_stack(&stk);) 
+$       (log_dump(&stk);)
+$       (pop_stack(&stk);) 
+$       (log_dump(&stk);)
+$       (pop_stack(&stk);) 
+$       (log_dump(&stk);)
+$       (pop_stack(&stk);) 
+$       (log_dump(&stk);)
+$       (pop_stack(&stk);) 
+$       (log_dump(&stk);)
+$       (pop_stack(&stk);) 
+$       (log_dump(&stk);)
+$       (pop_stack(&stk);) 
+$       (log_dump(&stk);)
+$       (pop_stack(&stk);) 
+$       (log_dump(&stk);)
+$       (pop_stack(&stk);) 
+$       (log_dump(&stk);)
+$       (pop_stack(&stk);) 
 
+$       (log_dump(&stk);)
         /*void *d = calloc(2, sizeof(float));
         log("d: 0x%lx\n", (size_t)d);
         void *a = calloc(2, sizeof(int));

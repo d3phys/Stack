@@ -27,7 +27,7 @@ static inline const item_t get_poison(const int byte)
 }
 
 #ifdef CANARY_PROTECT
-const u_int64_t CANARY = 0xABADB1BA;
+const u_int64_t CANARY = 0xCCCCCCCCCCCCCCCC;
 #endif /* CANARY_PROTECT */
 
 #endif /* UNPROTECT */
@@ -43,16 +43,16 @@ static inline void set_error(int *const error, int value)
 }
 
 
-static inline canary_t *left_canary(const stack_t *const stk)
+static inline canary_t *left_canary(const void *const items, const size_t capacity)
 {
-        return (canary_t *)((char *)stk->items - sizeof(canary_t));
+        return (canary_t *)((char *)items - sizeof(canary_t));
 }
 
-static inline canary_t *right_canary(const stack_t *const stk)
+static inline canary_t *right_canary(const void *const items, const size_t capacity)
 {
-        return (canary_t *)((char *)stk->items + 
-                            (sizeof(item_t) * stk->capacity) + 
-                            (sizeof(item_t) * stk->capacity) % sizeof(void*));
+        return (canary_t *)((char *)items + 
+                            (sizeof(item_t) * capacity) + sizeof(void *) -
+                            (sizeof(item_t) * capacity) % sizeof(void *));
 }
 
 static int verify_empty_stack(const stack_t *const stk)
@@ -103,37 +103,68 @@ static item_t *realloc_stack(const stack_t *const stk, const size_t capacity)
         size_t cap = capacity * sizeof(item_t);
 
 #ifdef CANARY_PROTECT
-        cap += cap % sizeof(void *) + 2 * sizeof(canary_t);
+        cap += sizeof(void *) - cap % sizeof(void *) + 2 * sizeof(canary_t);
 #endif
 
-$       (item_t *items = (item_t *)realloc(stk->items, cap);)
+        item_t *items = stk->items;
+$       (items  = (item_t *)realloc(items, cap);)
+
         if (!items) {
                 log("Invalid stack reallocation: %s\n", strerror(errno));
                 return nullptr;
         }
 
-        if (stk->items == nullptr)
-        $       (memset(items, FILL_BYTE, cap);)
+$       (memset(items + stk->capacity, FILL_BYTE, cap - stk->capacity * sizeof(item_t));)
 
 #ifdef CANARY_PROTECT
-        *left_canary(stk)  = CANARY;
-        *right_canary(stk) = CANARY;
+        *right_canary(items, capacity) = CANARY ^ (size_t)items;
+        *left_canary(items, capacity)  = CANARY ^ (size_t)items;
 #endif
 
         return items;
 }
 
+/*
+ * @brief Weird and scary stack dump.
+ * @param stk stack to dump.
+ */
 void dump_stack(const stack_t *const stk)
 {
         assert(stk);
 
         log_buf("----------------------------------------------\n");
-        log_buf(" Status: %s\n",  verify_stack(stk) ? "<font color=\"red\"><b>error</b></font>" :
-                                                      "<font color=\"green\"><b>ok</b></font>");
+        log_buf(" Status: %s\n",  verify_stack(stk) ? 
+                "<font color=\"red\"><b>error</b></font>" :
+                "<font color=\"green\"><b>ok</b></font>");
+
         log_buf(" Size: %ld\n", stk->size);
         log_buf(" Capacity: %ld\n", stk->capacity);
-        log_buf(" Address: 0x%lx \n", (size_t)stk->items);
+        log_buf(" Address start: 0x%lx \n", (size_t)stk->items);
+        log_buf(" Address   end: 0x%lx \n", (size_t)stk->items + 
+                                          sizeof(item_t) * stk->capacity);
         log_buf("----------------------------------------------\n");
+
+#ifdef CANARY_PROTECT
+        log_buf(" Left  canary(hex) = %lx\n Address: 0x%lx %s\n", 
+                *left_canary(stk->items, stk->capacity), 
+                (size_t)left_canary(stk->items, stk->capacity), 
+                *left_canary (stk->items, 
+                              stk->capacity) == (CANARY ^ (size_t)stk->items)?
+                "<font color=\"green\"><b>ok</b></font>" :
+                "<font color=\"red\"><b>error</b></font>");
+
+        log_buf("----------------------------------------------\n");
+
+        log_buf(" Right canary(hex) = %lx\n Address: 0x%lx %s\n", 
+                *right_canary(stk->items, stk->capacity), 
+                (size_t)right_canary(stk->items, stk->capacity), 
+                *right_canary(stk->items, 
+                              stk->capacity) == (CANARY ^ (size_t)stk->items)?
+                "<font color=\"green\"><b>ok</b></font>" :
+                "<font color=\"red\"><b>error</b></font>");
+        log_buf("----------------------------------------------\n");
+#endif  /* CANARY_PROTECT */
+
 if (stk->items) for (size_t i = 0; i < stk->capacity; i++) {
                         if (stk->items[i] == POISON)
                                 log_buf("| 0x%.4lX stack[%7ld] = %18s |\n", 
@@ -142,20 +173,9 @@ if (stk->items) for (size_t i = 0; i < stk->capacity; i++) {
                                 log_buf("| 0x%.4lX stack[%7ld] = %18d |\n", 
                                         sizeof(*stk->items) * i, i, stk->items[i]);
                 }
-        log_buf("----------------------------------------------\n");
-/*
-#ifdef CANARY_PROTECT
-        log_buf("Left  canary: 0x%20lx %s\n", *get_left_canary(stk), 
-                                              *get_left_canary(stk) == CANARY ? 
-                                              "<font color=\"red\"><b>error</b></font>" :
-                                              "<font color=\"green\"><b>ok</b></font>");;
 
-        log_buf("Right canary: 0x%20lx %s\n", *get_right_canary(stk), 
-                                              *get_right_canary(stk) == CANARY ? 
-                                              "<font color=\"red\"><b>error</b></font>" :
-                                              "<font color=\"green\"><b>ok</b></font>");;
-        log_buf("----------------------------------------------\n\n\n");
-#endif  CANARY_PROTECT */
+        log_buf("----------------------------------------------\n");
+
 
         log_buf("\n\n\n");
         log_flush();
@@ -165,9 +185,12 @@ void construct_stack(stack_t *const stk, size_t capacity, int *const error)
 {
         assert(stk);
         item_t *items = nullptr;
-
         int err = 0;
+
+#ifndef UNPROTECT
 $       (err = verify_empty_stack(stk);)
+#endif /* UNPROTECT */
+
         if (err) {
                 log("Can't construct (stack is not empty)\n");
                 goto finally;
@@ -184,7 +207,7 @@ $       (err = verify_empty_stack(stk);)
 
         items = realloc_stack(stk, capacity);
         if (!items) {
-                log("Invalid stack memory allocation: %s\n", strerror(errno));
+                log("Invalid stack memory allocation\n");
                 err = STK_BAD_ALLOC;
                 goto finally;
         }
@@ -193,7 +216,10 @@ $       (err = verify_empty_stack(stk);)
         stk->items    = (item_t *)items;
         stk->size     = 0;
 
+
+#ifndef UNPROTECT
 $       (err = verify_stack(stk);)
+#endif /* UNPROTECT */
 
 finally:
         if (err) {
@@ -212,7 +238,9 @@ void push_stack(stack_t *const stk, const item_t item, int *const error)
         assert(stk);
         int err = 0;
 
+#ifndef UNPROTECT
 $       (err = verify_stack(stk);)
+#endif /* UNPROTECT */
         if (err) {
                 log("Can't push to invalid stack\n");
                 goto finally;
@@ -222,7 +250,7 @@ $       (err = verify_stack(stk);)
                 size_t capacity = stk->capacity;
                 capacity *= CAP_FACTOR;
 
-        $       (void *items = realloc(stk->items, sizeof(item_t) * capacity);)
+        $       (void *items = realloc_stack(stk, capacity);)
                 if (!items) {
                         log("Invalid stack expanding: %s\n", strerror(errno));
                         err = STK_BAD_ALLOC;
@@ -235,7 +263,9 @@ $       (err = verify_stack(stk);)
 
         stk->items[stk->size++] = item;
 
+#ifndef UNPROTECT
 $       (err = verify_stack(stk);)
+#endif /* UNPROTECT */
 
 finally:
         if (err) {
@@ -246,18 +276,24 @@ finally:
 
 static inline int shrinkable(const stack_t *const stk) 
 {
-        return stk->capacity / (CAP_FACTOR * CAP_FACTOR) >= stk->size && 
+        return stk->capacity / (CAP_FACTOR * CAP_FACTOR) + 1 >= stk->size && 
                stk->capacity > INIT_CAP;
 }
 
 item_t pop_stack(stack_t *const stk, int *const error)
 {
         assert(stk);
-
         int err = 0;
-        size_t item = POISON;
 
-$       (err = verify_stack(stk));
+#ifndef UNPROTECT
+        size_t item = POISON;
+#else
+        size_t item = 0;
+#endif /* UNPROTECT */
+
+#ifndef UNPROTECT
+$       (err = verify_stack(stk);)
+#endif /* UNPROTECT */
         if (err) {
                 log("Can't pop item from invalid stack\n");
                 goto finally;
@@ -273,7 +309,7 @@ $       (err = verify_stack(stk));
                 size_t capacity = stk->capacity;
                 capacity /= CAP_FACTOR;
 
-                void *items = realloc(stk->items, sizeof(item_t) * capacity);
+$               (void *items = realloc_stack(stk, capacity);)
                 if (!items) {
                         log("Invalid stack shrinking: %s\n", strerror(errno));
                         err = STK_BAD_ALLOC;
@@ -287,7 +323,9 @@ $       (err = verify_stack(stk));
         item = stk->items[--stk->size];
         stk->items[stk->size] = POISON;
 
-$       (err = verify_stack(stk));
+#ifndef UNPROTECT
+$       (err = verify_stack(stk);)
+#endif /* UNPROTECT */
 
 finally:
         if (err) {
