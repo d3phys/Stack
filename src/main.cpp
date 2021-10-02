@@ -33,7 +33,7 @@ $       (log_dump(&stk);)
 $       (push_stack(&stk, 'f');) 
 $       (log_dump(&stk);)
 $       (push_stack(&stk, 'f');) 
-$       (*((char *)stk.items - 2) = 32;);
+//$       (*((char *)stk.items - 2) = 32;);
 $       (log_dump(&stk);)
 $       (push_stack(&stk, 'f');) 
 $       (log_dump(&stk);)
@@ -44,7 +44,8 @@ $       (log_dump(&stk);)
 $       (push_stack(&stk, 'f');) 
 $       (log_dump(&stk);)
 $       (push_stack(&stk, 'f');) 
-$       (*((char *)stk.items - sizeof(canary_t) + 2) = 32;);
+$       (stk.capacity = 321;)
+//$       (*((char *)stk.items + 4) = 32;);
 $       (log_dump(&stk);)
 $       (push_stack(&stk, 'f');) 
 $       (log_dump(&stk);)

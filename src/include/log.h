@@ -12,8 +12,7 @@ static const char HEADER[] = "<!DOCTYPE html>                      \n"
                                       "<title>Stack log</title>    \n"
                                    "</head>                        \n"
                                 "<body>                            \n"
-                                   "<pre>                          \n"
-                                             "<font color=\"navy\">\n"
+                                        "<pre><font color=\"navy\">\n"
                                                     "┈┏━╮╭━┓┈╭━━━━╮\n"
                                                     "┈┃┏┗┛┓┃╭┫MEOW┃\n"
                                                     "┈╰┓▋▋┏╯╯╰━━━━╯\n"
@@ -66,6 +65,6 @@ static inline FILE* create_log()
         } while (0)
 #endif /* NODEBUG */
 
-
 #endif /* LOG_H */
+
 
