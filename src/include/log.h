@@ -2,8 +2,9 @@
 #define LOG_H
 
 #include <stdio.h>
+// TIME LOG 
 
-static const char LOG_NAME[]= "stack_log.html";
+static const char LOG_NAME[]= "log.html";
 
 static const char HEADER[] = "<!DOCTYPE html>                      \n"
                                 "<html>                            \n"
@@ -23,7 +24,7 @@ static const char HEADER[] = "<!DOCTYPE html>                      \n"
                                                     "┈┈┈┈┗┻┛┗┻┛┈┈┈┈\n"
                                                     "       </font>\n";  
 static inline FILE* create_log();
-static FILE *LOG = create_log();
+static FILE *LOG  = create_log();
 
 inline FILE *const get_log()
 {
@@ -37,7 +38,7 @@ inline void log_flush()
 
 static inline FILE* create_log()
 {
-        LOG = fopen(LOG_NAME, "w");
+        LOG = fopen(LOG_NAME, "w"); // ХОТЯ бы что-нибудь
         fprintf(LOG, HEADER);
         fflush(LOG);
         return LOG;
