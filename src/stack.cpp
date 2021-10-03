@@ -3,7 +3,6 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <limits.h>
-#include <sys/cdefs.h>
 #include <errno.h>
 #include <string.h>
 #include "include/stack.h"
@@ -77,7 +76,7 @@ $       (memset(items + stk->size, FILL_BYTE, cap - stk->size * sizeof(item_t));
 
 #ifdef CANARY_PROTECT
         *right_canary(items, capacity) = CANARY ^ (size_t)items;
-        *left_canary(items, capacity)  = CANARY ^ (size_t)items;
+        *left_canary (items, capacity) = CANARY ^ (size_t)items;
 #endif
 
         return items;
@@ -320,7 +319,7 @@ static inline const item_t get_poison(const int byte)
         return poison;
 }
 
-static inline int expandable(const stack_t *const stk) 
+static inline int expandable(const stack_t *const stk)
 {
         return stk->capacity == stk->size;
 }
@@ -391,7 +390,7 @@ void dump_stack(stack_t *const stk)
                 "<font color=\"red\"><b>error</b></font>");
         log_buf("----------------------------------------------\n");
 
-        log_buf(" Left data canary(hex) = %lx\n Address: 0x%lx %s\n", 
+        log_buf(" Left  data canary(hex) = %lx\n Address: 0x%lx %s\n", 
                 *left_canary(stk->items, stk->capacity), 
                 (size_t)left_canary(stk->items, stk->capacity), 
                 *left_canary (stk->items, 
