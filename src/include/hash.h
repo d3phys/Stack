@@ -5,8 +5,8 @@
  * @date   03.10.2021
  */
 
-#ifndef HASH_H
-#define HASH_H
+#ifndef HASH_H_
+#define HASH_H_
 
 /**
  * @brief Murmur2 algorithm hash function.
@@ -29,5 +29,5 @@
  */
 unsigned int murmur_hash(const void *key, int length, unsigned int seed);
 
-#endif /* HASH_H */
+#endif /* HASH_H_ */
 

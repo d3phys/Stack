@@ -5,21 +5,21 @@
  * @date   07.10.2021
  */
 
+#include <stdint.h>
+#include <stdlib.h>
+
 #ifndef STACK_H_
 #define STACK_H_
 
-#include <cstdint>
-#include <stdlib.h>
-
 #define CANARY_PROTECT
 #define HASH_PROTECT
-/* #define UNPROTECT */
+//#define UNPROTECT 
 
 typedef char item_t; 
 
 #ifdef CANARY_PROTECT
 typedef uint64_t canary_t;
-const u_int64_t CANARY = 0xCCCCCCCCCCCCCCCC;
+const uint64_t CANARY = 0xCCCCCCCCCCCCCCCC;
 #endif /* CANARY_PROTECT */
 
 #ifdef HASH_PROTECT
@@ -29,7 +29,6 @@ const int SEED = 0xDED32BAD;
 
 /**
  * @brief Stack structure
- * @author d3phys
  */
 struct stack_t {
 
@@ -65,18 +64,15 @@ enum stack_error_t {
  * @brief Verification error flags 
  */
 enum invariant_err_t {
-        INVALID_CAPACITY   = 1 << 1,
-        INVALID_SIZE       = 1 << 2,
-        INVALID_ITEMS      = 1 << 3,
-        INVALID_HASH       = 1 << 4,
-        INVALID_DATA_LCNRY = 1 << 5,
-        INVALID_DATA_RCNRY = 1 << 6,
-        INVALID_STK_LCNRY  = 1 << 7,
-        INVALID_STK_RCNRY  = 1 << 8,
+        INVALID_CAPACITY   = 1 << 0,
+        INVALID_SIZE       = 1 << 1,
+        INVALID_ITEMS      = 1 << 2,
+        INVALID_HASH       = 1 << 3,
+        INVALID_DATA_LCNRY = 1 << 4,
+        INVALID_DATA_RCNRY = 1 << 5,
+        INVALID_STK_LCNRY  = 1 << 6,
+        INVALID_STK_RCNRY  = 1 << 7,
 };
-
-const int STK_EMPTY  = 0x0000000000001;
-const int STK_FILLED = 0x0000000000000;
 
 #define log_dump(_stk)               \
         do {                         \
@@ -90,6 +86,7 @@ const int STK_FILLED = 0x0000000000000;
  * @param stk Stack to dump
  *
  * It prints stack dump to a log file. 
+ * If log file is empty stderr stream is used.
  * There are a lot of useful information inside.
  */
 void dump_stack(stack_t *const stk);
@@ -100,51 +97,72 @@ void dump_stack(stack_t *const stk);
  * @param[out] stk      Stack to create
  * @param[out] error    Error proceeded
  *
- * It is the manual way to create stack. Do not use other ways. 
+ * It is the manual way to create stack. 
+ * In case of an error, nothing happens to the stack.
+ * Do not use other ways. 
  */
 stack_t *const construct_stack(stack_t *const stk, int *const error = nullptr);
 
 /**
  * @brief Stack destructor 
  *
- * @param      stk      Stack to destroy 
- * @param[out] error    Error proceeded
+ * @param stk Stack to destroy 
  *
- * It is the manual way to destroy stack. Do not use other ways. 
+ * It takes any bullshit and makes clear stack.
+ * After destruction stack can be created again.
  */
-stack_t *const destruct_stack(stack_t *const stk, int *const error = nullptr);
+stack_t *const destruct_stack(stack_t *const stk);
 
 /**
- * @brief Stack push
+ * @brief Pushes item to stack 
  *
  * @param stk        Stack push to
  * @param item       Item to push
  * @param[out] error Error proceeded
+ *
+ * This function works with valid and not empty stack only.
+ * It rescales stack if there are no empty space availible. 
+ * In case of an error, nothing happens to the stack.
  */
 void push_stack(stack_t *const stk, const item_t item, int *const error = nullptr);
 
 /**
- * @brief Stack pop 
+ * @brief Pops item from stack 
  *
  * @param stk        Stack pop from 
  * @param[out] error Error proceeded
+ *
+ * This function works with valid and not empty stack only.
+ * It rescales stack if there are a lot empty space availible. 
+ * In case of an error, nothing happens to the stack.
  *
  * @return 'Popped' item
  */
 item_t pop_stack(stack_t *const stack, int *const error = nullptr);
 
-/**
- * @brief Stack push
+/*
+ * @brief Verifies stack
  *
- * @param stk Stack to verify 
+ * @param stk Stack to verify
  *
- * Main stack verifier. Use it to verify damaged stack.
+ * Tries to get all available information.
+ * It doesn't change stack at all. 
  *
- * @return 
- * - 0 if stack is valid 
- * - non-zero otherwise (check invariant_err_t)
+ * @return bit mask composed of invariant_err_t elemets
  */
-int verify_stack(stack_t *const stk);
+static int verify_stack(stack_t *const stk);
+
+/*
+ * @brief Verifies an empty stack
+ *
+ * @param stk Stack to verify
+ *
+ * Tries to get all available information.
+ * It doesn't change stack at all. 
+ *
+ * @return bit mask composed of invariant_err_t elemets
+ */
+static int verify_empty_stack(const stack_t *const stk);
 
 #endif /* STACK_H_ */
 
