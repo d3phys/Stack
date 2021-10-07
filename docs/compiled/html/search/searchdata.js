@@ -1,9 +1,9 @@
 var indexSectionsWithContent =
 {
-  0: "cdhilmprsv",
+  0: "cdhilmprs",
   1: "s",
-  2: "hs",
-  3: "cdmpv",
+  2: "hls",
+  3: "cdmp",
   4: "chilrs",
   5: "is"
 };

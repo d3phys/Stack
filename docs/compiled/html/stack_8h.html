@@ -98,14 +98,15 @@ $(document).ready(function(){initNavTree('stack_8h.html',''); initResizable(); }
 <a href="#define-members">Macros</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
 <a href="#enum-members">Enumerations</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">stack.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
 <p>Stack implementation.  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &lt;cstdint&gt;</code><br />
+<div class="textblock"><code>#include &lt;stdint.h&gt;</code><br />
 <code>#include &lt;stdlib.h&gt;</code><br />
 </div>
 <p><a href="stack_8h_source.html">Go to the source code of this file.</a></p>
@@ -149,13 +150,15 @@ Enumerations</h2></td></tr>
 <tr class="memdesc:a70a16a5733f48e0e8d4930bcd1070b2d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stack error codes. <br /></td></tr>
 <tr class="separator:a70a16a5733f48e0e8d4930bcd1070b2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0ba21c5907dd1a0cff2c2ff1db798366"><td class="memItemLeft" align="right" valign="top"><a id="a0ba21c5907dd1a0cff2c2ff1db798366" name="a0ba21c5907dd1a0cff2c2ff1db798366"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stack_8h.html#a0ba21c5907dd1a0cff2c2ff1db798366">invariant_err_t</a> { <br />
-&#160;&#160;<b>INVALID_CAPACITY</b> = 1
+&#160;&#160;<b>INVALID_CAPACITY</b> = 1 &lt;&lt; 0
 , <b>INVALID_SIZE</b> = 1 &lt;&lt; 1
 , <b>INVALID_ITEMS</b> = 1 &lt;&lt; 2
 , <b>INVALID_HASH</b> = 1 &lt;&lt; 3
 , <br />
-&#160;&#160;<b>INVALID_DATA_CNRY</b> = 1 &lt;&lt; 4
-, <b>INVALID_STK_CNRY</b> = 1 &lt;&lt; 5
+&#160;&#160;<b>INVALID_DATA_LCNRY</b> = 1 &lt;&lt; 4
+, <b>INVALID_DATA_RCNRY</b> = 1 &lt;&lt; 5
+, <b>INVALID_STK_LCNRY</b> = 1 &lt;&lt; 6
+, <b>INVALID_STK_RCNRY</b> = 1 &lt;&lt; 7
 <br />
  }</td></tr>
 <tr class="memdesc:a0ba21c5907dd1a0cff2c2ff1db798366"><td class="mdescLeft">&#160;</td><td class="mdescRight">Verification error flags. <br /></td></tr>
@@ -166,26 +169,32 @@ Functions</h2></td></tr>
 <tr class="memitem:af94f42b70842669f9a90ee16d07bb369"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stack_8h.html#af94f42b70842669f9a90ee16d07bb369">dump_stack</a> (<a class="el" href="structstack__t.html">stack_t</a> *const stk)</td></tr>
 <tr class="memdesc:af94f42b70842669f9a90ee16d07bb369"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dumps stack.  <a href="stack_8h.html#af94f42b70842669f9a90ee16d07bb369">More...</a><br /></td></tr>
 <tr class="separator:af94f42b70842669f9a90ee16d07bb369"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7e9876d9eb7fc278241623b9473056a3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stack_8h.html#a7e9876d9eb7fc278241623b9473056a3">construct_stack</a> (<a class="el" href="structstack__t.html">stack_t</a> *const stk, size_t capacity, int *const error=nullptr)</td></tr>
-<tr class="memdesc:a7e9876d9eb7fc278241623b9473056a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stack constructor.  <a href="stack_8h.html#a7e9876d9eb7fc278241623b9473056a3">More...</a><br /></td></tr>
-<tr class="separator:a7e9876d9eb7fc278241623b9473056a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab854086bfa6d38783f4937c243f67968"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stack_8h.html#ab854086bfa6d38783f4937c243f67968">destruct_stack</a> (<a class="el" href="structstack__t.html">stack_t</a> *const stk, int *const error=nullptr)</td></tr>
-<tr class="memdesc:ab854086bfa6d38783f4937c243f67968"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stack destructor.  <a href="stack_8h.html#ab854086bfa6d38783f4937c243f67968">More...</a><br /></td></tr>
-<tr class="separator:ab854086bfa6d38783f4937c243f67968"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a643889bf4eebe1142b7ebebf4d7c1000"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structstack__t.html">stack_t</a> *const&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stack_8h.html#a643889bf4eebe1142b7ebebf4d7c1000">construct_stack</a> (<a class="el" href="structstack__t.html">stack_t</a> *const stk, int *const error=nullptr)</td></tr>
+<tr class="memdesc:a643889bf4eebe1142b7ebebf4d7c1000"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stack constructor.  <a href="stack_8h.html#a643889bf4eebe1142b7ebebf4d7c1000">More...</a><br /></td></tr>
+<tr class="separator:a643889bf4eebe1142b7ebebf4d7c1000"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac057c5400acc44565af55a8d7ec905a6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structstack__t.html">stack_t</a> *const&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stack_8h.html#ac057c5400acc44565af55a8d7ec905a6">destruct_stack</a> (<a class="el" href="structstack__t.html">stack_t</a> *const stk)</td></tr>
+<tr class="memdesc:ac057c5400acc44565af55a8d7ec905a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stack destructor.  <a href="stack_8h.html#ac057c5400acc44565af55a8d7ec905a6">More...</a><br /></td></tr>
+<tr class="separator:ac057c5400acc44565af55a8d7ec905a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2b3aa2e98a08893389f02d5be51b43b0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stack_8h.html#a2b3aa2e98a08893389f02d5be51b43b0">push_stack</a> (<a class="el" href="structstack__t.html">stack_t</a> *const stk, const item_t item, int *const error=nullptr)</td></tr>
-<tr class="memdesc:a2b3aa2e98a08893389f02d5be51b43b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stack push.  <a href="stack_8h.html#a2b3aa2e98a08893389f02d5be51b43b0">More...</a><br /></td></tr>
+<tr class="memdesc:a2b3aa2e98a08893389f02d5be51b43b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pushes item to stack.  <a href="stack_8h.html#a2b3aa2e98a08893389f02d5be51b43b0">More...</a><br /></td></tr>
 <tr class="separator:a2b3aa2e98a08893389f02d5be51b43b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a79a7f801c5677277c9bd1d3e8ca73bb6"><td class="memItemLeft" align="right" valign="top">item_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stack_8h.html#a79a7f801c5677277c9bd1d3e8ca73bb6">pop_stack</a> (<a class="el" href="structstack__t.html">stack_t</a> *const stack, int *const error=nullptr)</td></tr>
-<tr class="memdesc:a79a7f801c5677277c9bd1d3e8ca73bb6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stack pop.  <a href="stack_8h.html#a79a7f801c5677277c9bd1d3e8ca73bb6">More...</a><br /></td></tr>
+<tr class="memdesc:a79a7f801c5677277c9bd1d3e8ca73bb6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pops item from stack.  <a href="stack_8h.html#a79a7f801c5677277c9bd1d3e8ca73bb6">More...</a><br /></td></tr>
 <tr class="separator:a79a7f801c5677277c9bd1d3e8ca73bb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af7cdc3f3d2c953a12de40515c6fff248"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stack_8h.html#af7cdc3f3d2c953a12de40515c6fff248">verify_stack</a> (<a class="el" href="structstack__t.html">stack_t</a> *const stk)</td></tr>
-<tr class="memdesc:af7cdc3f3d2c953a12de40515c6fff248"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stack push.  <a href="stack_8h.html#af7cdc3f3d2c953a12de40515c6fff248">More...</a><br /></td></tr>
-<tr class="separator:af7cdc3f3d2c953a12de40515c6fff248"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:ac603ed44dd69c84fcbf5fb4f06a1bf8b"><td class="memItemLeft" align="right" valign="top"><a id="ac603ed44dd69c84fcbf5fb4f06a1bf8b" name="ac603ed44dd69c84fcbf5fb4f06a1bf8b"></a>
+const uint64_t&#160;</td><td class="memItemRight" valign="bottom"><b>CANARY</b> = 0xCCCCCCCCCCCCCCCC</td></tr>
+<tr class="separator:ac603ed44dd69c84fcbf5fb4f06a1bf8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c0d5cbc910bbc8cac68735cb0afd76a"><td class="memItemLeft" align="right" valign="top"><a id="a4c0d5cbc910bbc8cac68735cb0afd76a" name="a4c0d5cbc910bbc8cac68735cb0afd76a"></a>
+const int&#160;</td><td class="memItemRight" valign="bottom"><b>SEED</b> = 0xDED32BAD</td></tr>
+<tr class="separator:a4c0d5cbc910bbc8cac68735cb0afd76a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Stack implementation. </p>
 <dl class="section author"><dt>Author</dt><dd>d3phys </dd></dl>
-<dl class="section date"><dt>Date</dt><dd>03.10.2021 </dd></dl>
+<dl class="section date"><dt>Date</dt><dd>07.10.2021 </dd></dl>
 </div><h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="afdb1a636d710cd36fac60c985f3843fb" name="afdb1a636d710cd36fac60c985f3843fb"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#afdb1a636d710cd36fac60c985f3843fb">&#9670;&nbsp;</a></span>log_dump</h2>
@@ -210,23 +219,17 @@ Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="a7e9876d9eb7fc278241623b9473056a3" name="a7e9876d9eb7fc278241623b9473056a3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7e9876d9eb7fc278241623b9473056a3">&#9670;&nbsp;</a></span>construct_stack()</h2>
+<a id="a643889bf4eebe1142b7ebebf4d7c1000" name="a643889bf4eebe1142b7ebebf4d7c1000"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a643889bf4eebe1142b7ebebf4d7c1000">&#9670;&nbsp;</a></span>construct_stack()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void construct_stack </td>
+          <td class="memname"><a class="el" href="structstack__t.html">stack_t</a> *const construct_stack </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structstack__t.html">stack_t</a> *const&#160;</td>
           <td class="paramname"><em>stk</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>capacity</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -246,37 +249,26 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[out]</td><td class="paramname">stk</td><td>Stack to create </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">capacity</td><td>Initial stack capacity </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">error</td><td>Error proceeded</td></tr>
   </table>
   </dd>
 </dl>
-<p>It is the manual way to create stack. Do not use other ways. </p>
+<p>It is the manual way to create stack. In case of an error, nothing happens to the stack. Do not use other ways. </p>
 
 </div>
 </div>
-<a id="ab854086bfa6d38783f4937c243f67968" name="ab854086bfa6d38783f4937c243f67968"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab854086bfa6d38783f4937c243f67968">&#9670;&nbsp;</a></span>destruct_stack()</h2>
+<a id="ac057c5400acc44565af55a8d7ec905a6" name="ac057c5400acc44565af55a8d7ec905a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac057c5400acc44565af55a8d7ec905a6">&#9670;&nbsp;</a></span>destruct_stack()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void destruct_stack </td>
+          <td class="memname"><a class="el" href="structstack__t.html">stack_t</a> *const destruct_stack </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structstack__t.html">stack_t</a> *const&#160;</td>
-          <td class="paramname"><em>stk</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramname"><em>stk</em></td><td>)</td>
           <td></td>
-          <td class="paramtype">int *const&#160;</td>
-          <td class="paramname"><em>error</em> = <code>nullptr</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -284,12 +276,11 @@ Functions</h2></td></tr>
 <p>Stack destructor. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir"></td><td class="paramname">stk</td><td>Stack to destroy </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">error</td><td>Error proceeded</td></tr>
+    <tr><td class="paramname">stk</td><td>Stack to destroy</td></tr>
   </table>
   </dd>
 </dl>
-<p>It is the manual way to destroy stack. Do not use other ways. </p>
+<p>It takes any bullshit and makes clear stack. After destruction stack can be created again. </p>
 
 </div>
 </div>
@@ -316,7 +307,15 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<p>It prints stack dump to a log file. There are a lot of useful information inside. </p>
+<p>It prints stack dump to a log file. If log file is empty stderr stream is used. There are a lot of useful information inside.</p>
+<p >Dumps stack.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">stk</td><td>Stack to dump</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>It is scary! Stay away from him... </p>
 
 </div>
 </div>
@@ -346,7 +345,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Stack pop. </p>
+<p>Pops item from stack. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir"></td><td class="paramname">stk</td><td>Stack pop from </td></tr>
@@ -354,6 +353,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+<p>This function works with valid and not empty stack only. It rescales stack if there are a lot empty space availible. In case of an error, nothing happens to the stack.</p>
 <dl class="section return"><dt>Returns</dt><dd>'Popped' item </dd></dl>
 
 </div>
@@ -390,47 +390,16 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Stack push. </p>
+<p>Pushes item to stack. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir"></td><td class="paramname">stk</td><td>Stack push to </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">item</td><td>Item to push </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">error</td><td>Error proceeded </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">error</td><td>Error proceeded</td></tr>
   </table>
   </dd>
 </dl>
-
-</div>
-</div>
-<a id="af7cdc3f3d2c953a12de40515c6fff248" name="af7cdc3f3d2c953a12de40515c6fff248"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af7cdc3f3d2c953a12de40515c6fff248">&#9670;&nbsp;</a></span>verify_stack()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int verify_stack </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="structstack__t.html">stack_t</a> *const&#160;</td>
-          <td class="paramname"><em>stk</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Stack push. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">stk</td><td>Stack to verify</td></tr>
-  </table>
-  </dd>
-</dl>
-<p>Main stack verifier. Use it to verify damaged stack.</p>
-<dl class="section return"><dt>Returns</dt><dd><ul>
-<li>0 if stack is valid</li>
-<li>non-zero otherwise (check invariant_err_t) </li>
-</ul>
-</dd></dl>
+<p>This function works with valid and not empty stack only. It rescales stack if there are no empty space availible. In case of an error, nothing happens to the stack. </p>
 
 </div>
 </div>

@@ -97,27 +97,28 @@ $(document).ready(function(){initNavTree('stack_8h_source.html',''); initResizab
 </div><!--header-->
 <div class="contents">
 <a href="stack_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span> </div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#ifndef STACK_H_</span></div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#define STACK_H_</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;stdint.h&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;stdlib.h&gt;</span></div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;stdlib.h&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#ifndef STACK_H_</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#define STACK_H_</span></div>
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#define CANARY_PROTECT</span></div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#define HASH_PROTECT</span></div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="comment">/* #define UNPROTECT */</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="comment">//#define UNPROTECT </span></div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">typedef</span> <span class="keywordtype">char</span> item_t; </div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#ifdef CANARY_PROTECT</span></div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">typedef</span> uint64_t canary_t;</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#endif </span><span class="comment">/* CANARY_PROTECT */</span><span class="preprocessor"></span></div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="preprocessor">#ifdef HASH_PROTECT</span></div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">typedef</span> uint32_t hash_t;</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="preprocessor">#endif </span><span class="comment">/* HASH_PROTECT */</span><span class="preprocessor"></span></div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">const</span> uint64_t CANARY = 0xCCCCCCCCCCCCCCCC;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#endif </span><span class="comment">/* CANARY_PROTECT */</span><span class="preprocessor"></span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="preprocessor">#ifdef HASH_PROTECT</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">typedef</span> uint32_t hash_t;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keyword">const</span> <span class="keywordtype">int</span> SEED = 0xDED32BAD;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="preprocessor">#endif </span><span class="comment">/* HASH_PROTECT */</span><span class="preprocessor"></span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structstack__t.html">   33</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structstack__t.html">stack_t</a> {</div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="preprocessor">#ifdef CANARY_PROTECT</span></div>
@@ -145,43 +146,46 @@ $(document).ready(function(){initNavTree('stack_8h_source.html',''); initResizab
 <div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>};</div>
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
 <div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="stack_8h.html#a0ba21c5907dd1a0cff2c2ff1db798366">   66</a></span><span class="keyword">enum</span> <a class="code hl_enumeration" href="stack_8h.html#a0ba21c5907dd1a0cff2c2ff1db798366">invariant_err_t</a> {</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        INVALID_CAPACITY    = 1,</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        INVALID_SIZE        = 1 &lt;&lt; 1,</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        INVALID_ITEMS       = 1 &lt;&lt; 2,</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        INVALID_HASH        = 1 &lt;&lt; 3,</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        INVALID_DATA_CNRY   = 1 &lt;&lt; 4,</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        INVALID_STK_CNRY    = 1 &lt;&lt; 5,</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>};</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span><span class="preprocessor">#define log_dump(_stk)               \</span></div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span><span class="preprocessor">        do {                         \</span></div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span><span class="preprocessor">                log(&quot;Stack dump\n&quot;</span>); \</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>                dump_stack(_stk);    \</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        } while (0)</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span><span class="keywordtype">void</span> <a class="code hl_function" href="stack_8h.html#af94f42b70842669f9a90ee16d07bb369">dump_stack</a>(<a class="code hl_struct" href="structstack__t.html">stack_t</a> *<span class="keyword">const</span> stk);</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span><span class="keywordtype">void</span> <a class="code hl_function" href="stack_8h.html#a7e9876d9eb7fc278241623b9473056a3">construct_stack</a>(<a class="code hl_struct" href="structstack__t.html">stack_t</a> *<span class="keyword">const</span> stk, <span class="keywordtype">size_t</span> capacity, <span class="keywordtype">int</span> *<span class="keyword">const</span> error = <span class="keyword">nullptr</span>);</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span><span class="keywordtype">void</span> <a class="code hl_function" href="stack_8h.html#ab854086bfa6d38783f4937c243f67968">destruct_stack</a>(<a class="code hl_struct" href="structstack__t.html">stack_t</a> *<span class="keyword">const</span> stk, <span class="keywordtype">int</span> *<span class="keyword">const</span> error = <span class="keyword">nullptr</span>);</div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span><span class="keywordtype">void</span> <a class="code hl_function" href="stack_8h.html#a2b3aa2e98a08893389f02d5be51b43b0">push_stack</a>(<a class="code hl_struct" href="structstack__t.html">stack_t</a> *<span class="keyword">const</span> stk, <span class="keyword">const</span> item_t item, <span class="keywordtype">int</span> *<span class="keyword">const</span> error = <span class="keyword">nullptr</span>);</div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>item_t <a class="code hl_function" href="stack_8h.html#a79a7f801c5677277c9bd1d3e8ca73bb6">pop_stack</a>(<a class="code hl_struct" href="structstack__t.html">stack_t</a> *<span class="keyword">const</span> stack, <span class="keywordtype">int</span> *<span class="keyword">const</span> error = <span class="keyword">nullptr</span>);</div>
-<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span> </div>
-<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span><span class="keywordtype">int</span> <a class="code hl_function" href="stack_8h.html#af7cdc3f3d2c953a12de40515c6fff248">verify_stack</a>(<a class="code hl_struct" href="structstack__t.html">stack_t</a> *<span class="keyword">const</span> stk);</div>
-<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span> </div>
-<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span><span class="preprocessor">#endif </span><span class="comment">/* STACK_H_ */</span><span class="preprocessor"></span></div>
-<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span> </div>
-<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span> </div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        INVALID_CAPACITY   = 1 &lt;&lt; 0,</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        INVALID_SIZE       = 1 &lt;&lt; 1,</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        INVALID_ITEMS      = 1 &lt;&lt; 2,</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        INVALID_HASH       = 1 &lt;&lt; 3,</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        INVALID_DATA_LCNRY = 1 &lt;&lt; 4,</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        INVALID_DATA_RCNRY = 1 &lt;&lt; 5,</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        INVALID_STK_LCNRY  = 1 &lt;&lt; 6,</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        INVALID_STK_RCNRY  = 1 &lt;&lt; 7,</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>};</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span><span class="preprocessor">#define log_dump(_stk)               \</span></div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span><span class="preprocessor">        do {                         \</span></div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span><span class="preprocessor">                log(&quot;Stack dump\n&quot;</span>); \</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>                dump_stack(_stk);    \</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        } while (0)</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span><span class="keywordtype">void</span> <a class="code hl_function" href="stack_8h.html#af94f42b70842669f9a90ee16d07bb369">dump_stack</a>(<a class="code hl_struct" href="structstack__t.html">stack_t</a> *<span class="keyword">const</span> stk);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span><a class="code hl_struct" href="structstack__t.html">stack_t</a> *<span class="keyword">const</span> <a class="code hl_function" href="stack_8h.html#a643889bf4eebe1142b7ebebf4d7c1000">construct_stack</a>(<a class="code hl_struct" href="structstack__t.html">stack_t</a> *<span class="keyword">const</span> stk, <span class="keywordtype">int</span> *<span class="keyword">const</span> error = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span><a class="code hl_struct" href="structstack__t.html">stack_t</a> *<span class="keyword">const</span> <a class="code hl_function" href="stack_8h.html#ac057c5400acc44565af55a8d7ec905a6">destruct_stack</a>(<a class="code hl_struct" href="structstack__t.html">stack_t</a> *<span class="keyword">const</span> stk);</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span> </div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span><span class="keywordtype">void</span> <a class="code hl_function" href="stack_8h.html#a2b3aa2e98a08893389f02d5be51b43b0">push_stack</a>(<a class="code hl_struct" href="structstack__t.html">stack_t</a> *<span class="keyword">const</span> stk, <span class="keyword">const</span> item_t item, <span class="keywordtype">int</span> *<span class="keyword">const</span> error = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> </div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>item_t <a class="code hl_function" href="stack_8h.html#a79a7f801c5677277c9bd1d3e8ca73bb6">pop_stack</a>(<a class="code hl_struct" href="structstack__t.html">stack_t</a> *<span class="keyword">const</span> stack, <span class="keywordtype">int</span> *<span class="keyword">const</span> error = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span> </div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span><span class="keyword">static</span> <span class="keywordtype">int</span> verify_stack(<a class="code hl_struct" href="structstack__t.html">stack_t</a> *<span class="keyword">const</span> stk);</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span> </div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span><span class="keyword">static</span> <span class="keywordtype">int</span> verify_empty_stack(<span class="keyword">const</span> <a class="code hl_struct" href="structstack__t.html">stack_t</a> *<span class="keyword">const</span> stk);</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span> </div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span><span class="preprocessor">#endif </span><span class="comment">/* STACK_H_ */</span><span class="preprocessor"></span></div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span> </div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span> </div>
 <div class="ttc" id="astack_8h_html_a0ba21c5907dd1a0cff2c2ff1db798366"><div class="ttname"><a href="stack_8h.html#a0ba21c5907dd1a0cff2c2ff1db798366">invariant_err_t</a></div><div class="ttdeci">invariant_err_t</div><div class="ttdoc">Verification error flags.</div><div class="ttdef"><b>Definition:</b> stack.h:66</div></div>
-<div class="ttc" id="astack_8h_html_a2b3aa2e98a08893389f02d5be51b43b0"><div class="ttname"><a href="stack_8h.html#a2b3aa2e98a08893389f02d5be51b43b0">push_stack</a></div><div class="ttdeci">void push_stack(stack_t *const stk, const item_t item, int *const error=nullptr)</div><div class="ttdoc">Stack push.</div><div class="ttdef"><b>Definition:</b> stack.cpp:137</div></div>
+<div class="ttc" id="astack_8h_html_a2b3aa2e98a08893389f02d5be51b43b0"><div class="ttname"><a href="stack_8h.html#a2b3aa2e98a08893389f02d5be51b43b0">push_stack</a></div><div class="ttdeci">void push_stack(stack_t *const stk, const item_t item, int *const error=nullptr)</div><div class="ttdoc">Pushes item to stack.</div><div class="ttdef"><b>Definition:</b> stack.cpp:159</div></div>
+<div class="ttc" id="astack_8h_html_a643889bf4eebe1142b7ebebf4d7c1000"><div class="ttname"><a href="stack_8h.html#a643889bf4eebe1142b7ebebf4d7c1000">construct_stack</a></div><div class="ttdeci">stack_t *const construct_stack(stack_t *const stk, int *const error=nullptr)</div><div class="ttdoc">Stack constructor.</div><div class="ttdef"><b>Definition:</b> stack.cpp:110</div></div>
 <div class="ttc" id="astack_8h_html_a70a16a5733f48e0e8d4930bcd1070b2d"><div class="ttname"><a href="stack_8h.html#a70a16a5733f48e0e8d4930bcd1070b2d">stack_error_t</a></div><div class="ttdeci">stack_error_t</div><div class="ttdoc">Stack error codes.</div><div class="ttdef"><b>Definition:</b> stack.h:56</div></div>
-<div class="ttc" id="astack_8h_html_a79a7f801c5677277c9bd1d3e8ca73bb6"><div class="ttname"><a href="stack_8h.html#a79a7f801c5677277c9bd1d3e8ca73bb6">pop_stack</a></div><div class="ttdeci">item_t pop_stack(stack_t *const stack, int *const error=nullptr)</div><div class="ttdoc">Stack pop.</div><div class="ttdef"><b>Definition:</b> stack.cpp:183</div></div>
-<div class="ttc" id="astack_8h_html_a7e9876d9eb7fc278241623b9473056a3"><div class="ttname"><a href="stack_8h.html#a7e9876d9eb7fc278241623b9473056a3">construct_stack</a></div><div class="ttdeci">void construct_stack(stack_t *const stk, size_t capacity, int *const error=nullptr)</div><div class="ttdoc">Stack constructor.</div><div class="ttdef"><b>Definition:</b> stack.cpp:85</div></div>
-<div class="ttc" id="astack_8h_html_ab854086bfa6d38783f4937c243f67968"><div class="ttname"><a href="stack_8h.html#ab854086bfa6d38783f4937c243f67968">destruct_stack</a></div><div class="ttdeci">void destruct_stack(stack_t *const stk, int *const error=nullptr)</div><div class="ttdoc">Stack destructor.</div><div class="ttdef"><b>Definition:</b> stack.cpp:239</div></div>
-<div class="ttc" id="astack_8h_html_af7cdc3f3d2c953a12de40515c6fff248"><div class="ttname"><a href="stack_8h.html#af7cdc3f3d2c953a12de40515c6fff248">verify_stack</a></div><div class="ttdeci">int verify_stack(stack_t *const stk)</div><div class="ttdoc">Stack push.</div><div class="ttdef"><b>Definition:</b> stack.cpp:280</div></div>
-<div class="ttc" id="astack_8h_html_af94f42b70842669f9a90ee16d07bb369"><div class="ttname"><a href="stack_8h.html#af94f42b70842669f9a90ee16d07bb369">dump_stack</a></div><div class="ttdeci">void dump_stack(stack_t *const stk)</div><div class="ttdoc">Dumps stack.</div><div class="ttdef"><b>Definition:</b> stack.cpp:357</div></div>
+<div class="ttc" id="astack_8h_html_a79a7f801c5677277c9bd1d3e8ca73bb6"><div class="ttname"><a href="stack_8h.html#a79a7f801c5677277c9bd1d3e8ca73bb6">pop_stack</a></div><div class="ttdeci">item_t pop_stack(stack_t *const stack, int *const error=nullptr)</div><div class="ttdoc">Pops item from stack.</div><div class="ttdef"><b>Definition:</b> stack.cpp:205</div></div>
+<div class="ttc" id="astack_8h_html_ac057c5400acc44565af55a8d7ec905a6"><div class="ttname"><a href="stack_8h.html#ac057c5400acc44565af55a8d7ec905a6">destruct_stack</a></div><div class="ttdeci">stack_t *const destruct_stack(stack_t *const stk)</div><div class="ttdoc">Stack destructor.</div><div class="ttdef"><b>Definition:</b> stack.cpp:262</div></div>
+<div class="ttc" id="astack_8h_html_af94f42b70842669f9a90ee16d07bb369"><div class="ttname"><a href="stack_8h.html#af94f42b70842669f9a90ee16d07bb369">dump_stack</a></div><div class="ttdeci">void dump_stack(stack_t *const stk)</div><div class="ttdoc">Dumps stack.</div><div class="ttdef"><b>Definition:</b> stack.cpp:413</div></div>
 <div class="ttc" id="astructstack__t_html"><div class="ttname"><a href="structstack__t.html">stack_t</a></div><div class="ttdoc">Stack structure.</div><div class="ttdef"><b>Definition:</b> stack.h:33</div></div>
 <div class="ttc" id="astructstack__t_html_a46e01c5ac2ccfac4effa2839e21ecdf0"><div class="ttname"><a href="structstack__t.html#a46e01c5ac2ccfac4effa2839e21ecdf0">stack_t::left_canary</a></div><div class="ttdeci">canary_t left_canary</div><div class="ttdef"><b>Definition:</b> stack.h:36</div></div>
 <div class="ttc" id="astructstack__t_html_a5d3cc6904c140ea7d30a1670f9c9876f"><div class="ttname"><a href="structstack__t.html#a5d3cc6904c140ea7d30a1670f9c9876f">stack_t::size</a></div><div class="ttdeci">size_t size</div><div class="ttdef"><b>Definition:</b> stack.h:41</div></div>

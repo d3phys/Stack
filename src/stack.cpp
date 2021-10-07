@@ -1,4 +1,4 @@
-/*
+/**
  * @file
  * @brief  Stack
  * @author d3phys
@@ -45,7 +45,7 @@ static item_t *realloc_stack(const stack_t *const stk, const size_t capacity);
 static int verify_stack(stack_t *const stk);
 static int verify_empty_stack(const stack_t *const stk);
 
-/*
+/**
  * @brief Calculates stack hash
  *
  * @param stk  Stack
@@ -403,7 +403,7 @@ static inline const char *const indicate_err(int condition)
                 return "<font color=\"green\"><b>ok</b></font>";
 }
 
-/*
+/**
  * @brief Prints weird stack dump
  *
  * @param stk Stack to dump

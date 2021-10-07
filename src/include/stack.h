@@ -140,7 +140,7 @@ void push_stack(stack_t *const stk, const item_t item, int *const error = nullpt
  */
 item_t pop_stack(stack_t *const stack, int *const error = nullptr);
 
-/*
+/**
  * @brief Verifies stack
  *
  * @param stk Stack to verify
@@ -152,7 +152,7 @@ item_t pop_stack(stack_t *const stack, int *const error = nullptr);
  */
 static int verify_stack(stack_t *const stk);
 
-/*
+/**
  * @brief Verifies an empty stack
  *
  * @param stk Stack to verify

@@ -1,4 +1,4 @@
-/*
+/**
  * @file 
  * @brief  Log
  * @author d3phys
@@ -36,7 +36,7 @@ static inline FILE *create_log();
 static FILE  *LOG = create_log();
 inline FILE *const get_log();
 
-/*
+/**
  * @brief  Gets local time
  * @param  fmt  time format
  *
