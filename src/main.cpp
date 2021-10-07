@@ -16,14 +16,17 @@ int main()
       
         size_t key = 0x32321323ffaafda;
         size_t key2= 0x33321323ffaafda;
+//        stk.capacity = 32;
 $       (log("Hash: %x\n", murmur_hash(&key, sizeof(key), 123));)
 $       (log("Hash: %x\n", murmur_hash(&key, sizeof(key), 12));)
 $       (log("Hash: %x\n", murmur_hash(&key2, sizeof(key2), 123));)
 
-$       (construct_stack(&stk, 10);)
+$       (log_dump(&stk);)
+$       (construct_stack(&stk);)
+
 $       (log_dump(&stk);)
 
-$       (push_stack(&stk, 'f');) 
+//$       (push_stack(&stk, 'f');) 
 $       (log_dump(&stk);)
         
 $       (pop_stack(&stk);) 

@@ -2,7 +2,7 @@
  * @file 
  * @brief  Stack implementation
  * @author d3phys
- * @date   03.10.2021
+ * @date   07.10.2021
  */
 
 #ifndef STACK_H_
@@ -19,12 +19,13 @@ typedef char item_t;
 
 #ifdef CANARY_PROTECT
 typedef uint64_t canary_t;
+const u_int64_t CANARY = 0xCCCCCCCCCCCCCCCC;
 #endif /* CANARY_PROTECT */
 
 #ifdef HASH_PROTECT
 typedef uint32_t hash_t;
+const int SEED = 0xDED32BAD;
 #endif /* HASH_PROTECT */
-
 
 /**
  * @brief Stack structure
@@ -64,13 +65,18 @@ enum stack_error_t {
  * @brief Verification error flags 
  */
 enum invariant_err_t {
-        INVALID_CAPACITY    = 1,
-        INVALID_SIZE        = 1 << 1,
-        INVALID_ITEMS       = 1 << 2,
-        INVALID_HASH        = 1 << 3,
-        INVALID_DATA_CNRY   = 1 << 4,
-        INVALID_STK_CNRY    = 1 << 5,
+        INVALID_CAPACITY   = 1 << 1,
+        INVALID_SIZE       = 1 << 2,
+        INVALID_ITEMS      = 1 << 3,
+        INVALID_HASH       = 1 << 4,
+        INVALID_DATA_LCNRY = 1 << 5,
+        INVALID_DATA_RCNRY = 1 << 6,
+        INVALID_STK_LCNRY  = 1 << 7,
+        INVALID_STK_RCNRY  = 1 << 8,
 };
+
+const int STK_EMPTY  = 0x0000000000001;
+const int STK_FILLED = 0x0000000000000;
 
 #define log_dump(_stk)               \
         do {                         \
@@ -92,12 +98,11 @@ void dump_stack(stack_t *const stk);
  * @brief Stack constructor
  *
  * @param[out] stk      Stack to create
- * @param      capacity Initial stack capacity
  * @param[out] error    Error proceeded
  *
  * It is the manual way to create stack. Do not use other ways. 
  */
-void construct_stack(stack_t *const stk, size_t capacity, int *const error = nullptr);
+stack_t *const construct_stack(stack_t *const stk, int *const error = nullptr);
 
 /**
  * @brief Stack destructor 
@@ -107,7 +112,7 @@ void construct_stack(stack_t *const stk, size_t capacity, int *const error = nul
  *
  * It is the manual way to destroy stack. Do not use other ways. 
  */
-void destruct_stack(stack_t *const stk, int *const error = nullptr);
+stack_t *const destruct_stack(stack_t *const stk, int *const error = nullptr);
 
 /**
  * @brief Stack push

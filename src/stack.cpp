@@ -9,23 +9,14 @@
 #include "include/log.h"
 #include "include/hash.h"
 
-static const int FILL_BYTE = 'u';
-
 #ifdef UNPROTECT
 #undef HASH_PROTECT
 #undef CANARY_PROTECT
 #endif /* UNPROTECT */
 
+static const int FILL_BYTE = 'u';
 static inline const item_t get_poison(const int byte);
 static item_t POISON = get_poison(FILL_BYTE);
-
-#ifdef HASH_PROTECT
-const int SEED = 0xDED32BAD;
-#endif /* HASH_PROTECT */
-
-#ifdef CANARY_PROTECT
-const u_int64_t CANARY = 0xCCCCCCCCCCCCCCCC;
-#endif /* CANARY_PROTECT */
 
 static const size_t INIT_CAP       = 2;
 static const size_t CAP_FACTOR     = 2;
@@ -39,23 +30,49 @@ static inline canary_t *left_canary(const void *const items, const size_t capaci
 static inline canary_t *right_canary(const void *const items, const size_t capacity);
 #endif /* CANARY_PROTECT */
 
-static int verify_empty_stack(const stack_t *const stk);
+#ifdef HASH_PROTECT
+static hash_t hash_stack(stack_t *const stk, int seed = SEED);
+#endif /* HASH_PROTECT */
+
+static inline const char *const indicate_err(int condition);
 static inline void set_error(int *const error, int value);
 
+static item_t *realloc_stack(const stack_t *const stk, const size_t capacity);
+static int verify_empty_stack(const stack_t *const stk);
+
+/*
+ * @brief Calculates stack hash
+ *
+ * @param stk  Stack
+ * @param seed Hash algorithm seed
+ *
+ * Calculates hash using murmur2 hash algorithm. 
+ * Uses stack's location in memory and check every byte. 
+ */
 #ifdef HASH_PROTECT
-static hash_t hash_stack(stack_t *const stk)
+static hash_t hash_stack(stack_t *const stk, int seed)
 {
         hash_t hash = stk->hash;
         stk->hash = 0;
 
-        hash_t stk_hash  = murmur_hash(stk, sizeof(stack_t), SEED);
-        hash_t data_hash = murmur_hash(stk->items, stk->capacity * sizeof(item_t), SEED);
+        hash_t stk_hash  = murmur_hash(stk, sizeof(stack_t), seed);
+        hash_t data_hash = murmur_hash(stk->items, stk->capacity * sizeof(item_t), seed);
 
         stk->hash = hash;
         return stk_hash ^ data_hash;
 }
 #endif /* HASH_PROTECT */
 
+/**
+ * @brief Reallocates stack memory 
+ *
+ * @param stk Stack to reallocate
+ * @param stk Stack's new capacity
+ *
+ * It is ANSI realloc() function wrapper. 
+ * It allocates additional memory and repositions canaries 
+ * if canary protection defined.
+ */
 static item_t *realloc_stack(const stack_t *const stk, const size_t capacity)
 {
         size_t cap = capacity * sizeof(item_t);
@@ -82,7 +99,7 @@ $       (memset(items + stk->size, FILL_BYTE, cap - stk->size * sizeof(item_t));
         return items;
 }
 
-void construct_stack(stack_t *const stk, size_t capacity, int *const error)
+stack_t *const construct_stack(stack_t *const stk, int *const error)
 {
         assert(stk);
         item_t *items = nullptr;
@@ -90,34 +107,28 @@ void construct_stack(stack_t *const stk, size_t capacity, int *const error)
 
 #ifndef UNPROTECT
 $       (err = verify_empty_stack(stk);)
-#endif /* UNPROTECT */
+#endif  /* UNPROTECT */
 
         if (err) {
                 log("Can't construct (stack is not empty)\n");
                 goto finally;
         }
 
-        if (capacity > CAP_MAX) { 
-                log("Initial capacity is big: %ld\n", capacity);
-                capacity = INIT_CAP;
-                goto finally;
-        }
-
-        if (capacity < INIT_CAP)
-                capacity = INIT_CAP;
-
-        items = realloc_stack(stk, capacity);
+        items = realloc_stack(stk, INIT_CAP);
         if (!items) {
                 log("Invalid stack memory allocation\n");
                 err = STK_BAD_ALLOC;
                 goto finally;
         }
 
-        stk->capacity = capacity;
+        stk->capacity = INIT_CAP;
         stk->items    = (item_t *)items;
         stk->size     = 0;
+
+#ifdef CANARY_PROTECT
         stk->left_canary  = CANARY;
         stk->right_canary = CANARY;
+#endif /* CANARY_PROTECT */
 
 #ifdef HASH_PROTECT
 $       (stk->hash = hash_stack(stk);)
@@ -131,7 +142,10 @@ finally:
         if (err) {
                 set_error(error, err);
                 log_dump(stk);
+                return nullptr;
         }
+
+        return stk;
 }
 
 void push_stack(stack_t *const stk, const item_t item, int *const error) 
@@ -190,7 +204,8 @@ item_t pop_stack(stack_t *const stk, int *const error)
 #ifndef UNPROTECT
 $       (err = verify_stack(stk);)
 #endif /* UNPROTECT */
-        if (err) {
+
+        if (err != STK_FILLED) {
                 log("Can't pop item from invalid stack\n");
                 goto finally;
         }
@@ -236,80 +251,88 @@ finally:
         return item;
 }
 
-void destruct_stack(stack_t *const stk, int *const error) 
+stack_t *const destruct_stack(stack_t *const stk, int *const error) 
 {
         assert(stk);
 
-        free(stk->items);
-        stk->items    = nullptr;
-        stk->capacity = -1;
-        stk->size     = -1;
+        if (stk->items)
+                free(stk->items);
+        stk->items        = nullptr;
+
+        stk->capacity     = 0;
+        stk->size         = 0;
+        stk->hash         = 0;
+        stk->left_canary  = 0;
+        stk->right_canary = 0;
+
+        return stk;
 }
 
 static int verify_empty_stack(const stack_t *const stk)
 {
         assert(stk);
-        int err = 0;
-
-        if (stk->capacity)
-                err |= INVALID_CAPACITY;
+        int vrf = 0x00000000;
 
         if (stk->items) 
-                err |= INVALID_ITEMS;
+                vrf |= INVALID_ITEMS;
+
+        if (stk->capacity)
+                vrf |= INVALID_CAPACITY;
 
         if (stk->size) 
-                err |= INVALID_SIZE;
+                vrf |= INVALID_SIZE;
 
 #ifdef HASH_PROTECT
-        if (stk->hash != 0)
-                err |= INVALID_HASH;
+        if (stk->hash)
+                vrf |= INVALID_HASH;
 #endif /* HASH_PROTECT */
 
 #ifdef CANARY_PROTECT
-        if (stk->left_canary  != 0 ||
-            stk->right_canary != 0 )
-                err |= INVALID_STK_CNRY;
+        if (stk->left_canary)
+                vrf |= INVALID_STK_LCNRY;
+        if (stk->right_canary)
+                vrf |= INVALID_STK_RCNRY;
 #endif /* CANARY_PROTECT */
 
-        if (err)
-                return err;
-
-        return 0;
+        return vrf;
 }
 
 int verify_stack(stack_t *const stk)
 {
         assert(stk);
-        int err = 0;
-        if (stk->capacity > CAP_MAX || stk->capacity < INIT_CAP)
-                err |= INVALID_CAPACITY;
+        int vrf = 0x00000000;
 
-        if (stk->items == nullptr) 
-                err |= INVALID_ITEMS;
+        if (stk->capacity > CAP_MAX || stk->capacity < INIT_CAP)
+                vrf |= INVALID_CAPACITY;
 
         if (stk->size > stk->capacity) 
-                err |= INVALID_SIZE;
+                vrf |= INVALID_SIZE;
+
+#ifdef CANARY_PROTECT
+        canary_t cnry = CANARY ^ (canary_t)stk->items;
+
+        if (stk->items != nullptr) {
+
+                if (*left_canary (stk->items, stk->capacity) != cnry)
+                        vrf |= INVALID_DATA_LCNRY;
+
+                if (*right_canary(stk->items, stk->capacity) != cnry)
+                        vrf |= INVALID_DATA_RCNRY;
+        }
+
+        if (stk->left_canary  != CANARY)
+                vrf |= INVALID_STK_LCNRY;
+
+        if (stk->right_canary != CANARY)
+                vrf |= INVALID_STK_RCNRY;
+#endif /* CANARY_PROTECT */
 
 #ifdef HASH_PROTECT
         if (stk->hash != hash_stack(stk))
-                err |= INVALID_HASH;
+                vrf |= INVALID_HASH;
 #endif /* HASH_PROTECT */
-        
-#ifdef CANARY_PROTECT
-        canary_t cnry = CANARY ^ (canary_t)stk->items;
-        if (*left_canary (stk->items, stk->capacity) != cnry ||
-            *right_canary(stk->items, stk->capacity) != cnry )
-                err |= INVALID_DATA_CNRY;
 
-        if (stk->left_canary  != CANARY ||
-            stk->right_canary != CANARY )
-                err |= INVALID_STK_CNRY;
-
-#endif /* CANARY_PROTECT */
-        if (err)
-                return err;
-
-        return 0;
+        return vrf;
 }
 
 static inline const item_t get_poison(const int byte) 
@@ -341,7 +364,9 @@ static inline canary_t *left_canary(const void *const items, const size_t capaci
 {
         return (canary_t *)((char *)items - sizeof(canary_t));
 }
+#endif /* CANARY_PROTECT */
 
+#ifdef CANARY_PROTECT
 static inline canary_t *right_canary(const void *const items, const size_t capacity)  
 {
         return (canary_t *)((char *)items + 
@@ -350,67 +375,77 @@ static inline canary_t *right_canary(const void *const items, const size_t capac
 }
 #endif /* CANARY_PROTECT */
 
+static inline const char *const indicate_err(int condition)
+{
+        if (condition)
+                return "<font color=\"red\"><b>error</b></font>"; 
+        else
+                return "<font color=\"green\"><b> ok</b></font>";
+}
+
 /*
- * @brief Weird and scary stack dump
+ * @brief Prints weird stack dump
  * @param stk Stack to dump
+ *
+ * It is scary! Stay away from him...
  */
 void dump_stack(stack_t *const stk)
 {
         assert(stk);
 
-        log_buf("----------------------------------------------\n");
-        log_buf(" Status: %s\n",  verify_stack(stk) ? 
-                "<font color=\"red\"><b>error</b></font>" :
-                "<font color=\"green\"><b>ok</b></font>");
+        if (stk->items == nullptr) {
 
-        log_buf(" Size: %ld\n", stk->size);
-        log_buf(" Capacity: %ld\n", stk->capacity);
-        log_buf(" Address start: 0x%lx \n", (size_t)stk->items);
-        log_buf(" Address   end: 0x%lx \n", (size_t)stk->items + 
-                                          sizeof(item_t) * stk->capacity);
-        log_buf("----------------------------------------------\n");
+                int vrf = verify_empty_stack(stk);
+
+                log_buf("----------------------------------------------\n");
+                log_buf(" Empty stack %s\n",                    indicate_err(vrf));
+                log_buf(" Size:     %10ld %s\n", stk->size,     indicate_err(vrf & INVALID_SIZE));
+                log_buf(" Capacity: %10ld %s\n", stk->capacity, indicate_err(vrf & INVALID_CAPACITY));
+                log_buf(" Address start: nullptr\n");
+                log_buf("----------------------------------------------\n");
+
+        } else {
+
+                int vrf = verify_stack(stk);
+
+                log_buf("----------------------------------------------\n");
+                log_buf(" Status: filled %s\n",                  indicate_err(vrf != STK_FILLED));
+                log_buf(" Size:     %15ld %s\n",      stk->size, indicate_err(vrf & INVALID_SIZE));
+                log_buf(" Capacity: %15ld %s\n",  stk->capacity, indicate_err(vrf & INVALID_CAPACITY));
+                log_buf(" Address start: 0x%lx \n", (size_t)stk->items);
+                log_buf(" Address   end: 0x%lx \n", (size_t)stk->items + 
+                                        sizeof(item_t) * stk->capacity);
+                log_buf("----------------------------------------------\n");
 
 #ifdef HASH_PROTECT 
-        log_buf(" Hash       (hex): %x %s\n", hash_stack(stk), 
-                                                hash_stack(stk) == stk->hash ?
-                "<font color=\"green\"><b>ok</b></font>" :
-                "<font color=\"red\"><b>error</b></font>");
-        log_buf(" Saved hash (hex): %x\n", stk->hash);
-        log_buf("----------------------------------------------\n");
+                log_buf(" Hash       (hex): %8x%s\n", hash_stack(stk), 
+                                                        indicate_err(vrf & INVALID_HASH));
+                log_buf(" Saved hash (hex): %8x\n", stk->hash);
+                log_buf("----------------------------------------------\n");
 #endif  /* HASH_PROTECT */
 
 #ifdef CANARY_PROTECT
-        log_buf(" Left  stack canary(hex) = %lx %s\n", CANARY,
-                               stk->left_canary == CANARY ?
-                "<font color=\"green\"><b>ok</b></font>" :
-                "<font color=\"red\"><b>error</b></font>");
-        log_buf(" Right stack canary(hex) = %lx %s\n", CANARY,
-                                    stk->right_canary == CANARY ?
-                "<font color=\"green\"><b>ok</b></font>" :
-                "<font color=\"red\"><b>error</b></font>");
-        log_buf("----------------------------------------------\n");
+                log_buf(" Left  stack canary(hex) = %lx%s\n", stk->left_canary,
+                                        indicate_err(vrf & INVALID_STK_LCNRY));
 
-        log_buf(" Left  data canary(hex) = %lx\n Address: 0x%lx %s\n", 
-                *left_canary(stk->items, stk->capacity), 
-                (size_t)left_canary(stk->items, stk->capacity), 
-                *left_canary (stk->items, 
-                              stk->capacity) == (CANARY ^ (size_t)stk->items)?
-                "<font color=\"green\"><b>ok</b></font>" :
-                "<font color=\"red\"><b>error</b></font>");
+                log_buf(" Right stack canary(hex) = %lx%s\n", stk->right_canary,
+                                        indicate_err(vrf & INVALID_STK_RCNRY));
+                log_buf("----------------------------------------------\n");
 
-        log_buf("\n");
+                log_buf(" Left  data canary(hex) =  %lx%s\n Address: 0x%lx\n", 
+                               *left_canary(stk->items, stk->capacity), 
+                                indicate_err(vrf & INVALID_DATA_LCNRY),
+                        (size_t)left_canary(stk->items, stk->capacity));
 
-        log_buf(" Right data canary(hex) = %lx\n Address: 0x%lx %s\n", 
-                *right_canary(stk->items, stk->capacity), 
-                (size_t)right_canary(stk->items, stk->capacity), 
-                *right_canary(stk->items, 
-                              stk->capacity) == (CANARY ^ (size_t)stk->items)?
-                "<font color=\"green\"><b>ok</b></font>" :
-                "<font color=\"red\"><b>error</b></font>");
-        log_buf("----------------------------------------------\n");
+                log_buf("\n");
+
+                log_buf(" Right data canary(hex) =  %lx%s\n Address: 0x%lx\n", 
+                               *right_canary(stk->items, stk->capacity), 
+                                indicate_err(vrf & INVALID_DATA_RCNRY),
+                        (size_t)right_canary(stk->items, stk->capacity));
+                log_buf("----------------------------------------------\n");
 #endif  /* CANARY_PROTECT */
 
-        if (stk->items) {
                 for (size_t i = 0; i < stk->capacity; i++) {
                         if (stk->items[i] == POISON) {
                                 log_buf("| 0x%.4lX stack[%7ld] = %18s |\n", 
@@ -420,12 +455,13 @@ void dump_stack(stack_t *const stk)
                                         sizeof(*stk->items) * i, i, stk->items[i]);
                         }
                 }
+
+                log_buf("----------------------------------------------\n");
+
         }
-
-        log_buf("----------------------------------------------\n");
-
 
         log_buf("\n\n\n");
         log_flush();
 }
+
 
