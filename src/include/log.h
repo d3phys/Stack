@@ -2,15 +2,17 @@
  * @file 
  * @brief  Log
  * @author d3phys
- * @date   07.10.2021
+ * @date   08.10.2021
  */
-
-#include <stdio.h>
-#include <time.h>
-#include <assert.h>
 
 #ifndef LOG_H
 #define LOG_H
+
+#include <cstdlib>
+#include <stdio.h>
+#include <time.h>
+#include <assert.h>
+#include "config.h"
 
 static const char LOG_NAME[]= "log.html";
 
@@ -34,6 +36,7 @@ static const char HEADER[] = "<!DOCTYPE html>                      \n"
                                                     
 static inline FILE *create_log();
 static FILE  *LOG = create_log();
+static void close_log();
 inline FILE *const get_log();
 
 /**
@@ -70,10 +73,15 @@ static inline FILE *create_log()
                 LOG = stderr;
         }
 
+        int err = atexit(close_log);
+        if (err)
+                perror("Log file will not be closed");
+
         fprintf(LOG, HEADER);
         fflush(LOG);
         return LOG;
 }
+
 inline FILE *const get_log()
 {
         return LOG;
@@ -84,18 +92,26 @@ inline void log_flush()
         fflush(LOG);
 }
 
+static void close_log()
+{
+        fprintf(stderr, "Close log\n");
+        int err = fclose(LOG);
+        if (err == EOF)
+                perror("Can't close log file");
+}
+
 #define $(code) log("%s\n", #code); code
 
-#ifdef NODEBUG
+#ifdef NOLOG
 #define log_buf(fmt, ...) (void(0))
 #else
 #define log_buf(fmt, ...)                               \
         do {                                            \
                 fprintf(get_log(), fmt, ##__VA_ARGS__); \
         } while (0)
-#endif /* NODEBUG */
+#endif /* NOLOG */
 
-#ifdef NODEBUG
+#ifdef NOLOG
 #define log(fmt, ...) (void(0))
 #else
 #define log(fmt, ...)                                                                         \
@@ -105,7 +121,7 @@ inline void log_flush()
                         __FILE__, __func__, __LINE__, ##__VA_ARGS__);                         \
                 fflush(get_log());                                                            \
         } while (0)
-#endif /* NODEBUG */
+#endif /* NOLOG */
 
 #endif /* LOG_H */
 

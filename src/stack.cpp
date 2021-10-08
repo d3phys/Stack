@@ -11,6 +11,7 @@
 #include "include/stack.h"
 #include "include/log.h"
 #include "include/hash.h"
+#include "include/config.h"
 
 #ifdef UNPROTECT
 #undef HASH_PROTECT
@@ -21,7 +22,7 @@ static const int FILL_BYTE = 'u';
 static inline const item_t get_poison(const int byte);
 static item_t POISON = get_poison(FILL_BYTE);
 
-static const size_t INIT_CAP       = 2;
+static const size_t INIT_CAP       = 8;
 static const size_t CAP_FACTOR     = 2;
 static const size_t CAP_MAX        = ~(SIZE_MAX >> 1);
 

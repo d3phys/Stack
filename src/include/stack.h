@@ -5,17 +5,14 @@
  * @date   07.10.2021
  */
 
-#include <stdint.h>
-#include <stdlib.h>
-
 #ifndef STACK_H_
 #define STACK_H_
 
-#define CANARY_PROTECT
-#define HASH_PROTECT
-//#define UNPROTECT 
+#include <stdint.h>
+#include <stdlib.h>
+#include "config.h"
 
-typedef char item_t; 
+typedef int item_t; 
 
 #ifdef CANARY_PROTECT
 typedef uint64_t canary_t;
