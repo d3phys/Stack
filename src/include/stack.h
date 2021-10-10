@@ -12,7 +12,6 @@
 #include <stdlib.h>
 #include "config.h"
 
-typedef int item_t; 
 
 #ifdef CANARY_PROTECT
 typedef uint64_t canary_t;

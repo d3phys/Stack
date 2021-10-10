@@ -30,7 +30,7 @@ static inline int expandable(const stack_t *const stk);
 static inline int shrinkable(const stack_t *const stk);
 
 #ifdef CANARY_PROTECT
-static inline canary_t *left_canary(const void *const items, const size_t capacity);
+static inline canary_t *left_canary (const void *const items, const size_t capacity);
 static inline canary_t *right_canary(const void *const items, const size_t capacity);
 #endif /* CANARY_PROTECT */
 
@@ -72,13 +72,13 @@ static hash_t hash_stack(stack_t *const stk, int seed)
 #endif /* HASH_PROTECT */
 
 /**
- * @brief Reallocates stack memory 
+ * @brief Reallocates stack memory
  *
  * @param stk Stack to reallocate
  * @param stk Stack's new capacity
  *
- * It is ANSI realloc() function wrapper. 
- * It allocates additional memory and repositions canaries 
+ * It is ANSI realloc() function wrapper.
+ * It allocates additional memory and repositions canaries.
  * if canary protection defined.
  */
 static item_t *realloc_stack(const stack_t *const stk, const size_t capacity)
@@ -260,13 +260,12 @@ finally:
         return item;
 }
 
-stack_t *const destruct_stack(stack_t *const stk) 
+stack_t *const destruct_stack(stack_t *const stk)
 {
         assert(stk);
 
         if (stk->items)
-                free(stk->items);
-        stk->items        = nullptr;
+            free(stk->items), stk->items = nullptr;
 
         stk->capacity     = 0;
         stk->size         = 0;

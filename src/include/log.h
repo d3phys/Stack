@@ -34,7 +34,7 @@ static const char HEADER[] = "<!DOCTYPE html>                      \n"
                                                     "┈┈┈┈┗┻┛┗┻┛┈┈┈┈\n"
                                                     "       </font>\n";  
                                                     
-static inline FILE *create_log();
+static inline FILE *create_log(); //setvbuf
 static FILE  *LOG = create_log();
 static void close_log();
 inline FILE *const get_log();
@@ -94,7 +94,6 @@ inline void log_flush()
 
 static void close_log()
 {
-        fprintf(stderr, "Close log\n");
         int err = fclose(LOG);
         if (err == EOF)
                 perror("Can't close log file");
