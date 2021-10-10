@@ -19,8 +19,8 @@ You should have `git`, `make` and `g++ compiler` installed.
 ## Usage
 Stack uses two secure techniques - `canary protection` and `hash protection`:
 
-* To use `canary protection` define `#define CANARY_PROTECT`.
-* To use `hash protection` define `#define HASH_PROTECT`. Hash is an expensive protection.
+* To use `canary protection` define `#define CANARY_PROTECT` in the config file.
+* To use `hash protection` define `#define HASH_PROTECT` in the config file. Hash is an expensive protection.
 
 If you want to disable protection define `#define UNPROTECT`. 
 Stack protection will be disabled regardless of whether canary or hash protection were previously defined.
