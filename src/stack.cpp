@@ -85,13 +85,19 @@ static item_t *realloc_stack(const stack_t *const stk, const size_t capacity)
 {
         assert(stk);
         size_t cap = capacity * sizeof(item_t);
+        item_t *items = stk->items;
 
 #ifdef CANARY_PROTECT
-        cap += sizeof(void *) - cap % sizeof(void *) + 2 * sizeof(canary_t);
-#endif
+        size_t can_cap = cap + sizeof(void *) - cap % sizeof(void *) + 2 * sizeof(canary_t);
 
-        item_t *items = stk->items;
-$       (items  = (item_t *)realloc(items, cap);)
+        if (items)
+                items = (item_t *)left_canary(stk->items);
+
+$       (items  = (item_t *)realloc((void *)items, can_cap);)
+$       (items  = (item_t *)((char *)items + sizeof(canary_t));)
+#else
+$       (items  = (item_t *)realloc((void *)items, cap);)
+#endif /* CANARY_PROTECT */
 
         if (!items) {
                 log("Invalid stack reallocation: %s\n", strerror(errno));
@@ -131,7 +137,7 @@ $       (err = verify_empty_stack(stk);)
         }
 
         stk->capacity = INIT_CAP;
-        stk->items    = (item_t *)items;
+        stk->items    = items;
         stk->size     = 0;
 
 #ifdef CANARY_PROTECT
@@ -263,8 +269,13 @@ stack_t *destruct_stack(stack_t *const stk)
 {
         assert(stk);
 
-        if (stk->items)
+        if (stk->items) {
+#ifndef CANARY_PROTECT
             free(stk->items), stk->items = nullptr;
+#else
+            free(left_canary(stk->items)), stk->items = nullptr;
+#endif /* CANARY_PROTECT */
+        }
 
         stk->capacity     = 0;
         stk->size         = 0;
