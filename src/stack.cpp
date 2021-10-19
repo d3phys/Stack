@@ -19,7 +19,7 @@
 #endif /* UNPROTECT */
 
 static const int FILL_BYTE = 'u';
-static inline const item_t get_poison(const int byte);
+static inline item_t get_poison(const int byte);
 static item_t POISON = get_poison(FILL_BYTE);
 
 static const size_t INIT_CAP       = 8;
@@ -30,15 +30,15 @@ static inline int expandable(const stack_t *const stk);
 static inline int shrinkable(const stack_t *const stk);
 
 #ifdef CANARY_PROTECT
-static inline canary_t *left_canary (const void *const items, const size_t capacity);
-static inline canary_t *right_canary(const void *const items, const size_t capacity);
+static inline canary_t *left_canary (void *const items);
+static inline canary_t *right_canary(void *const items, const size_t capacity);
 #endif /* CANARY_PROTECT */
 
 #ifdef HASH_PROTECT
-static hash_t hash_stack(stack_t *const stk, int seed = SEED);
+static hash_t hash_stack(stack_t *const stk, uint32_t seed = SEED);
 #endif /* HASH_PROTECT */
 
-static inline const char *const indicate_err(int condition);
+static inline const char *indicate_err(int condition);
 static inline void set_error(int *const error, int value);
 
 static item_t *realloc_stack(const stack_t *const stk, const size_t capacity);
@@ -56,7 +56,7 @@ static int verify_empty_stack(const stack_t *const stk);
  * Uses stack's location in memory and check every byte. 
  */
 #ifdef HASH_PROTECT
-static hash_t hash_stack(stack_t *const stk, int seed)
+static hash_t hash_stack(stack_t *const stk, uint32_t seed)
 {
         assert(stk);
 
@@ -102,13 +102,13 @@ $       (memset(items + stk->size, FILL_BYTE, cap - stk->size * sizeof(item_t));
 
 #ifdef CANARY_PROTECT
         *right_canary(items, capacity) = CANARY ^ (size_t)items;
-        *left_canary (items, capacity) = CANARY ^ (size_t)items;
+        *left_canary (items)           = CANARY ^ (size_t)items;
 #endif
 
         return items;
 }
 
-stack_t *const construct_stack(stack_t *const stk, int *const error)
+stack_t *construct_stack(stack_t *const stk, int *const error)
 {
         assert(stk);
         item_t *items = nullptr;
@@ -208,7 +208,7 @@ item_t pop_stack(stack_t *const stk, int *const error)
         assert(stk);
         int err = 0;
 
-        size_t item = POISON;
+        item_t item = POISON;
 
 #ifndef UNPROTECT
 $       (err = verify_stack(stk);)
@@ -224,7 +224,6 @@ $       (err = verify_stack(stk);)
                 err = STK_EMPTY_POP;
                 goto finally;
         }
-
         if (shrinkable(stk)) {
                 size_t capacity = stk->capacity;
                 capacity /= CAP_FACTOR;
@@ -260,7 +259,7 @@ finally:
         return item;
 }
 
-stack_t *const destruct_stack(stack_t *const stk)
+stack_t *destruct_stack(stack_t *const stk)
 {
         assert(stk);
 
@@ -282,6 +281,17 @@ stack_t *const destruct_stack(stack_t *const stk)
         return stk;
 }
 
+
+/**
+ * @brief Verifies an empty stack
+ *
+ * @param stk Stack to verify
+ *
+ * Tries to get all available information.
+ * It doesn't change stack at all. 
+ *
+ * @return bit mask composed of invariant_err_t elemets
+ */
 static int verify_empty_stack(const stack_t *const stk)
 {
         assert(stk);
@@ -311,6 +321,17 @@ static int verify_empty_stack(const stack_t *const stk)
         return vrf;
 }
 
+
+/**
+ * @brief Verifies stack
+ *
+ * @param stk Stack to verify
+ *
+ * Tries to get all available information.
+ * It doesn't change stack at all. 
+ *
+ * @return bit mask composed of invariant_err_t elemets
+ */
 static int verify_stack(stack_t *const stk)
 {
         assert(stk);
@@ -327,7 +348,7 @@ static int verify_stack(stack_t *const stk)
 
         if (stk->items != nullptr) {
 
-                if (*left_canary (stk->items, stk->capacity) != cnry)
+                if (*left_canary (stk->items) != cnry)
                         vrf |= INVALID_DATA_LCNRY;
 
                 if (*right_canary(stk->items, stk->capacity) != cnry)
@@ -351,7 +372,7 @@ static int verify_stack(stack_t *const stk)
         return vrf;
 }
 
-static inline const item_t get_poison(const int byte) 
+static inline item_t get_poison(const int byte) 
 {
         item_t poison = 0;
         memset((void *)&poison, byte, sizeof(item_t));
@@ -378,7 +399,7 @@ static inline void set_error(int *const error, int value)
 }
 
 #ifdef CANARY_PROTECT
-static inline canary_t *left_canary(const void *const items, const size_t capacity)
+static inline canary_t *left_canary(void *const items)
 {
         assert(items);
         return (canary_t *)((char *)items - sizeof(canary_t));
@@ -386,7 +407,7 @@ static inline canary_t *left_canary(const void *const items, const size_t capaci
 #endif /* CANARY_PROTECT */
 
 #ifdef CANARY_PROTECT
-static inline canary_t *right_canary(const void *const items, const size_t capacity)  
+static inline canary_t *right_canary(void *const items, const size_t capacity)  
 {
         assert(items);
         return (canary_t *)((char *)items + 
@@ -395,7 +416,7 @@ static inline canary_t *right_canary(const void *const items, const size_t capac
 }
 #endif /* CANARY_PROTECT */
 
-static inline const char *const indicate_err(int condition)
+static inline const char *indicate_err(int condition)
 {
         if (condition)
                 return "<font color=\"red\"><b>error</b></font>"; 
@@ -420,8 +441,8 @@ void dump_stack(stack_t *const stk)
 
                 log_buf("----------------------------------------------\n");
                 log_buf(" Empty stack: %s\n",                    indicate_err(vrf));
-                log_buf(" Size:     %10ld %s\n", stk->size,     indicate_err(vrf & INVALID_SIZE));
-                log_buf(" Capacity: %10ld %s\n", stk->capacity, indicate_err(vrf & INVALID_CAPACITY));
+                log_buf(" Size:     %10lu %s\n", stk->size,     indicate_err(vrf & INVALID_SIZE));
+                log_buf(" Capacity: %10lu %s\n", stk->capacity, indicate_err(vrf & INVALID_CAPACITY));
                 log_buf(" Address start: nullptr\n");
                 log_buf("----------------------------------------------\n");
 
@@ -431,8 +452,8 @@ void dump_stack(stack_t *const stk)
 
                 log_buf("----------------------------------------------\n");
                 log_buf(" Stack: %s\n",                  indicate_err(vrf));
-                log_buf(" Size:     %15ld %s\n",      stk->size, indicate_err(vrf & INVALID_SIZE));
-                log_buf(" Capacity: %15ld %s\n",  stk->capacity, indicate_err(vrf & INVALID_CAPACITY));
+                log_buf(" Size:     %15lu %s\n",      stk->size, indicate_err(vrf & INVALID_SIZE));
+                log_buf(" Capacity: %15lu %s\n",  stk->capacity, indicate_err(vrf & INVALID_CAPACITY));
                 log_buf(" Address start: 0x%lx\n", (size_t)stk->items);
                 log_buf(" Address   end: 0x%lx\n", (size_t)stk->items + 
                                         sizeof(item_t) * stk->capacity);
@@ -454,9 +475,9 @@ void dump_stack(stack_t *const stk)
                 log_buf("----------------------------------------------\n");
 
                 log_buf(" Left  data canary(hex) =  %lx %s\n Address: 0x%lx\n", 
-                               *left_canary(stk->items, stk->capacity), 
+                               *left_canary(stk->items), 
                                 indicate_err(vrf & INVALID_DATA_LCNRY),
-                        (size_t)left_canary(stk->items, stk->capacity));
+                        (size_t)left_canary(stk->items));
 
                 log_buf("\n");
 
@@ -469,10 +490,10 @@ void dump_stack(stack_t *const stk)
 
                 for (size_t i = 0; i < stk->capacity; i++) {
                         if (stk->items[i] == POISON) {
-                                log_buf("| 0x%.4lX stack[%7ld] = %18s |\n", 
+                                log_buf("| 0x%.4lX stack[%7lu] = %18s |\n", 
                                         sizeof(*stk->items) * i, i, "poison");
                         } else {
-                                log_buf("| 0x%.4lX stack[%7ld] = %18d |\n", 
+                                log_buf("| 0x%.4lX stack[%7lu] = %18d |\n", 
                                         sizeof(*stk->items) * i, i, stk->items[i]);
                         }
                 }

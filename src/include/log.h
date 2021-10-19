@@ -35,9 +35,9 @@ static const char HEADER[] = "<!DOCTYPE html>                      \n"
                                                     "       </font>\n";  
                                                     
 static inline FILE *create_log(); //setvbuf
-static FILE  *LOG = create_log();
+static FILE *LOG = create_log();
 static void close_log();
-inline FILE *const get_log();
+inline FILE *get_log();
 
 /**
  * @brief  Gets local time
@@ -48,7 +48,7 @@ inline FILE *const get_log();
  *
  * @return Local time as a formatted string.
  */
-static char *const local_time(const char *const fmt) 
+static char *local_time(const char *const fmt) 
 {
         assert(fmt);
 
@@ -82,7 +82,7 @@ static inline FILE *create_log()
         return LOG;
 }
 
-inline FILE *const get_log()
+inline FILE *get_log()
 {
         return LOG;
 }

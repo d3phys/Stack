@@ -9,9 +9,12 @@
 int main() {
 
         stack_t stk = {};
-        construct_stack(&stk);
+
+        stack_t *stkptr = construct_stack(&stk);
+        stkptr += 21;
+        stkptr = nullptr;
         pop_stack(&stk);
-        for (size_t i = 0; i < 50; i++) {
+        for (int i = 0; i < 50; i++) {
                 push_stack(&stk, i);
         }
         log_dump(&stk);

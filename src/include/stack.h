@@ -15,12 +15,12 @@
 
 #ifdef CANARY_PROTECT
 typedef uint64_t canary_t;
-const uint64_t CANARY = 0xCCCCCCCCCCCCCCCC;
+const   uint64_t CANARY = 0xCCCCCCCCCCCCCCCC;
 #endif /* CANARY_PROTECT */
 
 #ifdef HASH_PROTECT
 typedef uint32_t hash_t;
-const int SEED = 0xDED32BAD;
+const   uint32_t SEED = 0xDED32BAD;
 #endif /* HASH_PROTECT */
 
 /**
@@ -97,7 +97,7 @@ void dump_stack(stack_t *const stk);
  * In case of an error, nothing happens to the stack.
  * Do not use other ways. 
  */
-stack_t *const construct_stack(stack_t *const stk, int *const error = nullptr);
+stack_t *construct_stack(stack_t *const stk, int *const error = nullptr);
 
 /**
  * @brief Stack destructor 
@@ -107,7 +107,7 @@ stack_t *const construct_stack(stack_t *const stk, int *const error = nullptr);
  * It takes any bullshit and makes clear stack.
  * After destruction stack can be created again.
  */
-stack_t *const destruct_stack(stack_t *const stk);
+stack_t *destruct_stack(stack_t *stk);
 
 /**
  * @brief Pushes item to stack 
@@ -136,29 +136,6 @@ void push_stack(stack_t *const stk, const item_t item, int *const error = nullpt
  */
 item_t pop_stack(stack_t *const stack, int *const error = nullptr);
 
-/**
- * @brief Verifies stack
- *
- * @param stk Stack to verify
- *
- * Tries to get all available information.
- * It doesn't change stack at all. 
- *
- * @return bit mask composed of invariant_err_t elemets
- */
-static int verify_stack(stack_t *const stk);
-
-/**
- * @brief Verifies an empty stack
- *
- * @param stk Stack to verify
- *
- * Tries to get all available information.
- * It doesn't change stack at all. 
- *
- * @return bit mask composed of invariant_err_t elemets
- */
-static int verify_empty_stack(const stack_t *const stk);
 
 #endif /* STACK_H_ */
 

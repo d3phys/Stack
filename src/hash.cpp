@@ -1,12 +1,12 @@
 #include "include/hash.h"
 #include <assert.h>
 
-unsigned int murmur_hash(const void *key, unsigned int len, unsigned int seed)
+unsigned int murmur_hash(const void *key, size_t len, unsigned int seed)
 {
         const unsigned int mp = 0x5bd1e995;
         const int sft = 24;
 
-        unsigned int hash = seed ^ len;
+        unsigned int hash = seed ^ (unsigned int)len;
 
         const unsigned char *data = (const unsigned char *)key;
 
