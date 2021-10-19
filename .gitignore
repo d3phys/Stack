@@ -11,5 +11,8 @@ log.html
 input.txt
 out.txt
 
+#ctags file
+tags
+
 # Doxygen generated
 #/docs/compiled

@@ -27,7 +27,7 @@
  * 2. It will not produce the same results on little-endian and big-endian
  *    machines
  */
-unsigned int murmur_hash(const void *key, int length, unsigned int seed);
+unsigned int murmur_hash(const void *key, unsigned int length, unsigned int seed);
 
 #endif /* HASH_H_ */
 

@@ -14,6 +14,7 @@ int main() {
         for (size_t i = 0; i < 50; i++) {
                 push_stack(&stk, i);
         }
+        log_dump(&stk);
         destruct_stack(&stk);
         
         return 0;

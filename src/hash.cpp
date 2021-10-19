@@ -1,6 +1,7 @@
 #include "include/hash.h"
+#include <assert.h>
 
-unsigned int murmur_hash(const void *key, int len, unsigned int seed)
+unsigned int murmur_hash(const void *key, unsigned int len, unsigned int seed)
 {
         const unsigned int mp = 0x5bd1e995;
         const int sft = 24;
@@ -10,7 +11,7 @@ unsigned int murmur_hash(const void *key, int len, unsigned int seed)
         const unsigned char *data = (const unsigned char *)key;
 
         while (len >= 4) {
-                unsigned int k = *(unsigned int *)data;
+                unsigned int k = *(const unsigned int *)data;
 
                 k *= mp;
                 k ^= k >> sft;
@@ -23,15 +24,23 @@ unsigned int murmur_hash(const void *key, int len, unsigned int seed)
                 len  -= 4;
         }
 
+        unsigned int item = 0;
         switch (len) {
         case 3:
-                hash ^= data[2] << 16;
+                item = (unsigned int)data[2];
+                hash ^= item << 16;
+                /* fall through */
         case 2:
-                hash ^= data[1] << 8;
+                item = (unsigned int)data[1];
+                hash ^= item << 8u;
+                /* fall through */
         case 1:
-                hash ^= data[0];
-
+                item = (unsigned int)data[0];
+                hash ^= item;
                 hash *= mp;
+                break;
+        default:
+                assert(0);
         };
 
         hash ^= hash >> 13;
